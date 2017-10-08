@@ -90,6 +90,18 @@ class HashTableTest(unittest.TestCase):
         ht.set('X', 10)
         self.assertItemsEqual(ht.values(), [1, 5, 10])  # Ignore item order
 
+    def test_items(self):
+        ht = HashTable()
+        assert ht.items() == []
+        ht.set('I', 1)
+        print(ht.items())
+
+        assert ht.items() == [('I', 1)]
+        ht.set('V', 5)
+        self.assertItemsEqual(ht.items(), [('I', 1), ('V', 5)])
+        ht.set('X', 10)
+        self.assertItemsEqual(ht.items(), [('I', 1), ('V', 5), ('X', 10)])
+
 
 if __name__ == '__main__':
     unittest.main()

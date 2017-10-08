@@ -60,7 +60,7 @@ class HashTable(object):
     def contains(self, key):
         """Return True if this hash table contains the given key, or False"""
         # Check if the given key exists in a bucket
-        if (self.buckets[hash(key)%8].find(lambda item: item[0] == key)):
+        if (self.buckets[self._bucket_index(key)].find(lambda item: item[0] == key)):
             return True
         else:
             return False
@@ -69,22 +69,27 @@ class HashTable(object):
     def get(self, key):
         """Return the value associated with the given key, or raise KeyError"""
         # Check if the given key exists and return its associated value
-        data = self.buckets[hash(key)%8].find(lambda item: item[0] == key)
-        return data[1]
+        if self.contains(key):
+            data = self.buckets[self._bucket_index(key)].find(lambda item: item[0] == key)
+            return data[1]
+        else:
+            raise KeyError
 
         pass
 
     def set(self, key, value):
         """Insert or update the given key with its associated value"""
         # Insert or update the given key-value entry into a bucket
-        self.buckets[hash(key)%8].append([key, value])
+        if self.contains(key):
+            self.delete(key)
+        self.buckets[self._bucket_index(key)].append((key, value))
         pass
 
     def delete(self, key):
         """Delete the given key from this hash table, or raise KeyError"""
         # TODO: Find the given key and delete its entry if found
         if self.contains(key):
-            self.buckets[hash(key)%8].delete([key, self.get(key)])
+            self.buckets[self._bucket_index(key)].delete((key, self.get(key)))
             return
         else:
             raise KeyError
@@ -102,6 +107,8 @@ def test_hash_table():
     print(ht)
     ht.set('X', 10)
     print(ht)
+    ht.set('X', 20)
+    print(ht, "\n\n")
     print('contains(X): ' + str(ht.contains('X')))
     print('get(I): ' + str(ht.get('I')))
     print('get(V): ' + str(ht.get('V')))
