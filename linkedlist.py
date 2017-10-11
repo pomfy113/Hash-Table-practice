@@ -6,19 +6,20 @@ from __future__ import print_function
 class Node(object):
 
     def __init__(self, data):
-        """Initialize this node with the given data"""
+        """Initialize this node with the given data."""
         self.data = data
         self.next = None
 
     def __repr__(self):
-        """Return a string representation of this node"""
+        """Return a string representation of this node."""
         return 'Node({})'.format(repr(self.data))
 
 
 class LinkedList(object):
 
     def __init__(self, iterable=None):
-        """Initialize this linked list; append the given items, if any"""
+        """Initialize this linked list; append the given items, if any."""
+        # O(n) per iterable; creation of head/tail are constants
         self.head = None
         self.tail = None
         if iterable:
@@ -31,11 +32,13 @@ class LinkedList(object):
 
     def items(self):
         """Return a list of all items in this linked list"""
+        # O(n); dependent on append making array is 1,
+        # assigning current is 1, looping through it + appending is 2n.
+
         result = []
         current = self.head
         while current is not None:
             result.append(current.data)
-            # result.append(current)
             current = current.next
         return result
 
@@ -45,7 +48,7 @@ class LinkedList(object):
 
     def length(self):
         """Return the length of this linked list by traversing its nodes"""
-        # TODO: count number of items
+        # O(n); 1 for accum, 1 per counter, 2n for the while loop
         accum = 0
         counter = self.head
         while counter:
@@ -55,8 +58,13 @@ class LinkedList(object):
         pass
 
     def append(self, item):
-        """Insert the given item at the tail of this linked list"""
-        # TODO: append given item
+        """Insert the given item at the tail of this linked list."""
+        # O(6); depends on how many inputs are in the linked list
+        # Best case: 6 operations
+        # Create node, assign .data as item (2). Check if empty (1).
+        # Apply self's head and tail into new_node.
+        # Worst case: still the same because we know where the tail is
+
         new_node = Node(item)
         if self.is_empty():
             self.head = self.tail = new_node
@@ -67,7 +75,9 @@ class LinkedList(object):
 
     def prepend(self, item):
         """Insert the given item at the head of this linked list"""
-        # TODO: prepend given item
+        # See append; almost the same with things switched up
+        # O(6) total; constants are the same
+
         new_node = Node(item)
         if self.is_empty():
             self.head = self.tail = new_node
@@ -78,39 +88,53 @@ class LinkedList(object):
 
     def delete(self, item):
         """Delete the given item from this linked list, or raise ValueError"""
-        # TODO: find given item and delete if found
+        # Hoo boy. It depends.
+        # See each bit for their individual; constant on here is 3
+
         current = self.head
         previous = None
         found = False
         while current:
             if current.data == item:
+                # If it's the last remaining node
+                # It's constant.
                 if (previous is None) and (current.next is None):
-                    current.next = None
-                    self.head = self.tail = None
+                    current.next = self.head = self.tail = None
                     found = True
                     break
+                # If it's at the head.
+                # Also constant. Best case due to slightly less operations
                 elif previous is None:
                     self.head = self.head.next
                     found = True
                     break
+                # If it's at the tail;
+                # man, if only I had double-linked list. It's O(n)
+                # Also the worst case scenario.
                 elif current.next is None:
                     self.tail = previous
                     previous.next = None
                     found = True
                     break
+                # All other cases
+                # Dependent on size of list and where we meet it
+                # Can be anywhere from one to a million
                 else:
                     previous.next = current.next
                     found = True
                     break
+            # Hey it's like extra 2
             previous = current
             current = current.next
+        # If it's not found, then it's 0(n); had to go through all of the list
         if not found:
             raise ValueError
         pass
 
     def find(self, quality):
-        """Return an item from this linked list satisfying the given quality"""
-        # TODO: find item where quality(item) is True
+        """Return item from this linked list satisfying the given quality."""
+        # O(n). Depends on how big the list is.
+        # Worst case is the entire list. Best case is meeting off the bat.
         counter = self.head
         while counter:
             if quality(counter.data):
